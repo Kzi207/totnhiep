@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đếm Ngược Ngày Thi và Phát Nhạc</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: url("https://viapponline.com/wp-content/uploads/2024/06/dem-nguoc-ngay-thi-thpt-quoc-gia-1.webp") center/cover no-repeat;
+            background-attachment: fixed;
+            position: relative;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            font-family: 'Arizonia', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5rem; /* Tăng kích thước chữ */
+        }
+
+        .desktop-view, .mobile-view {
+            display: none;
+        }
+
+        @media (min-width: 601px) {
+            .desktop-view {
+                display: block;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .mobile-view {
+                display: block;
+            }
+        }
+
+        .row {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0b4c4b;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 90%;
+            max-width: 120px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Thêm bóng cho thẻ */
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7); /* Tăng bóng khi hover */
+        }
+
+        .display-6 {
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .message {
+            max-width: 90%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+            font-size: 1.1rem; /* Kích thước chữ cho thông điệp */
+        }
+
+        footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 1rem;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    z-index: 100;
+}
+
+
+        footer a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline; /* Hiệu ứng khi hover lên link */
+        }
+        .container {
+    position: relative; /* Để kiểm soát vị trí của bánh răng */
+}
+
+.settings-icon {
+    cursor: pointer;
+    font-size: 80px;
+    position: fixed; /* Changed from absolute to fixed */
+    right: -10px; /* Adjust the distance from the right edge */
+    top: 400px; /* Adjust the distance from the top edge */
+    z-index: 100; /* Ensure it stays on top */
+}
+
+
+.song-list {
+    display: none; /* Mặc định ẩn danh sách nhạc */
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px; /* Chiều cao tối đa để có thể cuộn */
+    overflow-y: auto; /* Cho phép cuộn */
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Đặt vị trí cố định */
+    right: 0; /* Đặt danh sách sát lề phải */
+    top: 50%; /* Đặt danh sách ở giữa theo chiều dọc */
+    transform: translateY(-50%); /* Dịch chuyển danh sách lên một nửa chiều cao của nó */
+    z-index: 100; /* Để danh sách nằm trên mọi thứ khác */
+}
+
+
+        .song {
+            display: flex;
+            align-items: center;
+            padding: 10px; /* Tăng padding để khung lớn hơn */
+            background-color: #e7fcff; /* Màu nền khung bài hát */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .song:hover {
+            background-color: #d1f1ff; /* Màu nền khi hover */
+            transform: scale(1.02); /* Phóng to một chút */
+        }
+
+        .song img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Bóng cho ảnh */
+        }
+
+        .song-details p {
+            margin: 0; /* Bỏ margin để giảm khoảng cách */
+        }
+
+        .song-details p + p {
+            margin-top: 2px; /* Thêm một khoảng cách nhỏ giữa tên bài hát và tác giả */
+        }
+    </style>
+</head>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown and Music Player</title>
+    <link rel="stylesheet" href="style.css"> <!-- Add your CSS file -->
+    <script src="script.js" defer></script> <!-- Add your JavaScript file -->
+</head>
+<body>
+    <h2 class="display-6" id="tieu-de-dem-nguoc-ngay">Sắp Thi THPT rồi! Chỉ còn&#8230;</h2>
+    <hr>
+
+    <div class="desktop-view">
+        <div class="row">
+            <div class="card">
+                <div class="card-header">Ngày</div>
+                <div class="card-body">
+                    <p class="display-6" id="days">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Giờ</div>
+                <div class="card-body">
+                    <p class="display-6" id="hours">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Phút</div>
+                <div class="card-body">
+                    <p class="display-6" id="minutes">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Giây</div>
+                <div class="card-body">
+                    <p class="display-6" id="seconds">&#8212;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-view">
+        <div class="row">
+            <div class="card">
+                <div class="card-header">Ngày</div>
+                <div class="card-body">
+                    <p class="display-6" id="days-mobile">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Giờ</div>
+                <div class="card-body">
+                    <p class="display-6" id="hours-mobile">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Phút</div>
+                <div class="card-body">
+                    <p class="display-6" id="minutes-mobile">&#8212;</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Giây</div>
+                <div class="card-body">
+                    <p class="display-6" id="seconds-mobile">&#8212;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="fs-4"><strong>Ngày thi THPT quốc gia 2025</strong> dự kiến là <b>26/06/2025</b></h2>
+
+    <div class="message">
+        <h3>Xin thông báo:</h3>
+
+        <p>Chuyến bay mang tên “THI TỐT NGHIỆP” sẽ cất cánh vào vào đầu tháng 6. Đề nghị tất cả các hành khách kiểm tra lại hành trang Kiến Thức, Tâm Lý và Tự Tin. Chuyến bay sẽ đáp cánh xuống đảo “Thành Công” nằm trên biển “Thất Bại”.
+
+Cùng với 1 chút May Mắn và sự chuẩn bị kỹ lưỡng chúng ta sẽ đáp cánh tốt đẹp xuống hoàn đảo xanh tươi này. Hành khách nào ko chuẩn bị tốt sẽ bị vứt xuống biển “Thất bại” cho loài cá “Lêu lêu” ăn thịt. Các bạn đã sẵn sàng chưa? Chúc các bạn thi tốt và vào được trường bạn mong muốn!!!!</p>
+   <p>PS:bạn có thể nghe nhạc bằng cách ấn vào nót nhạc bên phải</p> 
+</div> <!--thay đổi text -->
+
+    <footer>
+        2024 ©️ - <a id="website" href="https://kduy.io.vn" target="_blank">From KhánhDuy</a>
+    </footer>
+
+    <div class="container">
+        <div class="settings-icon" onclick="togglePlaylist(event)">
+            🎶
+        </div>
+        <div class="song-list" id="songList">
+            <div class="song" onclick="playSong('../music/Chẳng Còn Những Ngày Ấy Remix.mp3')"> <!--đường dãn nhạc-->
+                <img src="https://i.ibb.co/QfpF8rP/t-i-xu-ng.jpg" alt="Bìa Album 1">  <!--link ảnh-->
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong> Chẳng Còn Những Ngày Ấy Remix</p>  <!--tên bài hát-->
+                    <p><em>Tác giả: Vinz Ft. Huy Hiếu </em></p> <!--tác giả-->
+                </div>
+            </div>
+            <div class="song" onclick="playSong('../music/Mình Cùng Nhau Đóng Băng Remix.mp3')">
+                <img src="https://i.ibb.co/GVzrzm1/t-i-xu-ng-1.jpg" alt="Bìa Album 2">
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong> Mình Cùng Nhau Đóng Băng Remix</p>
+                    <p><em>Tác giả: Thùy Chi </em></p>
+                </div>
+            </div>
+            <div class="song" onclick="playSong('../music/Năm Tháng Ấy Remix.mp3')">
+                <img src="https://i.ibb.co/vkxfcyc/t-i-xu-ng-2.jpg" alt="Bìa Album 3">
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong>Năm Tháng Ấy Remix</p>
+                    <p><em>Tác giả:  GreenD (Prod Durian)</em></p>
+                </div>
+            </div>
+            <div class="song" onclick="playSong('../music/Như Ngày Hôm Qua Remix.mp3')">
+                <img src="https://i.ibb.co/48NSfsv/t-i-xu-ng-3.jpg" alt="Bìa Album 4">
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong> Như Ngày Hôm Qua Remix</p>
+                    <p><em>Tác giả: Sơn Tùng MTP</em></p>
+                </div>
+            </div>
+            <div class="song" onclick="playSong('../music/Tháng 5 Không Trở Lại .mp3')">
+                <img src="https://i.ibb.co/FY5YMSP/t-i-xu-ng-4.jpg" alt="Bìa Album 5">
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong> Tháng 5 Không Trở Lại</p>
+                    <p><em>Tác giả: The Wall Nutszz</em></p>
+                </div>
+            </div>
+            <div class="song" onclick="playSong('../music/Tháng Năm Không Quên.mp3')">
+                <img src="https://i.ibb.co/KXQfPqg/t-i-xu-ng-5.jpg" alt="Bìa Album 6">
+                <div class="song-details">
+                    <p><strong>Bài hát:</strong> Tháng Năm Không Quên</p>
+                    <p><em>Tác giả: H2K</em></p>
+                </div>
+            </div>
+            <!-- Thêm nhiều bài hát khác ở đây -->
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    let currentAudio = null; // Biến toàn cục để lưu trữ bài hát đang phát
+    var countDownDate = new Date("June 26, 2025 00:00:00").getTime();
+    var x = setInterval(updateCountdown, 1000);
+    
+    function updateCountdown() {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+    
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+        document.getElementById("days").innerHTML = days;
+        document.getElementById("hours").innerHTML = hours;
+        document.getElementById("minutes").innerHTML = minutes;
+        document.getElementById("seconds").innerHTML = seconds;
+    
+        // Cập nhật cho phiên bản di động nếu cần
+        document.getElementById("days-mobile").innerHTML = days;
+        document.getElementById("hours-mobile").innerHTML = hours;
+        document.getElementById("minutes-mobile").innerHTML = minutes;
+        document.getElementById("seconds-mobile").innerHTML = seconds;
+    
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("days").innerHTML = 0;
+            document.getElementById("hours").innerHTML = 0;
+            document.getElementById("minutes").innerHTML = 0;
+            document.getElementById("seconds").innerHTML = 0;
+    
+            // Cập nhật cho phiên bản di động nếu cần
+            document.getElementById("days-mobile").innerHTML = 0;
+            document.getElementById("hours-mobile").innerHTML = 0;
+            document.getElementById("minutes-mobile").innerHTML = 0;
+            document.getElementById("seconds-mobile").innerHTML = 0;
+        }
+    }
+    
+    function playSong(song) {
+        // Kiểm tra xem bài hát đang phát có giống bài hát được nhấn hay không
+        if (currentAudio && currentAudio.src.includes(song)) {
+            currentAudio.pause(); // Nếu đang phát bài hát đó, tắt bài
+            currentAudio = null; // Đặt lại biến hiện tại
+        } else {
+            if (currentAudio) {
+                currentAudio.pause(); // Tắt bài hát hiện tại nếu có
+            }
+            currentAudio = new Audio(song); // Tạo đối tượng Audio mới
+            currentAudio.play(); // Phát bài hát
+        }
+    }
+    
+    function togglePlaylist(event) {
+        event.stopPropagation(); // Ngăn chặn sự kiện click từ lan ra ngoài
+        const songList = document.getElementById('songList');
+        const settingsIcon = document.querySelector('.settings-icon');
+    
+        // Chuyển đổi hiển thị của danh sách nhạc
+        if (songList.style.display === 'flex') {
+            songList.style.display = 'none'; // Ẩn danh sách nhạc
+            settingsIcon.classList.remove('hidden'); // Hiện bánh răng
+        } else {
+            songList.style.display = 'flex'; // Hiện danh sách nhạc
+            settingsIcon.classList.add('hidden'); // Ẩn bánh răng
+            updateCountdown(); // Cập nhật đếm ngược khi mở danh sách nhạc
+        }
+    }
+    
+    // Sự kiện click trên document để ẩn danh sách nhạc khi nhấn ra ngoài
+    document.body.addEventListener('click', function(event) {
+        const songList = document.getElementById('songList');
+        const settingsIcon = document.querySelector('.settings-icon');
+    
+        // Nếu danh sách nhạc đang hiển thị và click không vào bánh răng hoặc danh sách nhạc
+        if (songList.style.display === 'flex' && !settingsIcon.contains(event.target) && !songList.contains(event.target)) {
+            songList.style.display = 'none'; // Ẩn danh sách nhạc
+            settingsIcon.classList.remove('hidden'); // Hiện bánh răng
+        }
+    });
+    </script>
+    
+</body>
+</html>
